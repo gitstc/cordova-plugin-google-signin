@@ -9,7 +9,7 @@ exports.isSignedIn = function (success, error) {
 };
 
 exports.signOut = function (success, error) {
-  exec(success, error, 'GoogleSignInPlugin', 'signOut');
+  exec(success, error, 'GoogleSignInPlugin', 'signOut', [options.scopes || ""]);
 };
 
 exports.disconnect = function (success, error) {

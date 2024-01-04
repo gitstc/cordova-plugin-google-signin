@@ -116,6 +116,11 @@ public class GoogleSignInPlugin extends CordovaPlugin {
             this.signIn(callbackContext);
             return true;
         } else if (action.equals(Constants.CORDOVA_ACTION_SIGNOUT)) {
+            //Firas
+            this.mScopes = args.getString(0);
+            if(this.mScopes == null || this.mScopes.trim().isEmpty()) {
+                this.mScopes = "";
+            }
             this.signOut(callbackContext);
             return true;
         }
