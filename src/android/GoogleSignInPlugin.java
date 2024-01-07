@@ -396,7 +396,7 @@ public class GoogleSignInPlugin extends CordovaPlugin {
             @Override
             protected Void doInBackground(Void... params) {
                 AccountManager manager = AccountManager.get(activity);
-                AccountManagerFuture<Bundle> future = manager.getAuthToken(account, "oauth2:profile email", null, activity, null, null);
+                AccountManagerFuture<Bundle> future = manager.getAuthToken(account, "oauth2:profile email " + mScopes, null, activity, null, null);
                 String authToken = "";
 
                 try {
