@@ -8,7 +8,7 @@ exports.isSignedIn = function (success, error) {
   exec(success, error, 'GoogleSignInPlugin', 'isSignedIn');
 };
 
-exports.signOut = function (success, error) {
+exports.signOut = function (success, error, options) {
   exec(success, error, 'GoogleSignInPlugin', 'signOut', [options.scopes || ""]);
 };
 
