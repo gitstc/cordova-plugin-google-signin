@@ -142,7 +142,7 @@ public class GoogleSignInPlugin extends CordovaPlugin {
                 getAuthToken(mCurrentActivity, account.getAccount(), true, new AccessTokenCallback() {
                     @Override
                     public void onToken(String token) {
-                        firebaseAuthWithGoogle(account.getIdToken(), token);
+                        firebaseAuthWithGoogle(account.getIdToken(), account.getServerAuthCode(), token);
                     }
                     
                     @Override
@@ -157,7 +157,7 @@ public class GoogleSignInPlugin extends CordovaPlugin {
         } else if (requestCode == RC_ONE_TAP) {
             try {
                 SignInCredential credential = mOneTapSigninClient.getSignInCredentialFromIntent(data);
-                firebaseAuthWithGoogle(credential.getGoogleIdToken(), "");
+                firebaseAuthWithGoogle(credential.getGoogleIdToken(), "", "");
             } catch(ApiException ex) {
                 String errorMessage = "";
                 switch (ex.getStatusCode()) {
@@ -265,7 +265,7 @@ public class GoogleSignInPlugin extends CordovaPlugin {
         });
     }
 
-    private void firebaseAuthWithGoogle(String googleIdToken, String accessToken) {
+    private void firebaseAuthWithGoogle(String googleIdToken, String serverAuthCode, String accessToken) {
         AuthCredential credentials = GoogleAuthProvider.getCredential(googleIdToken, null);
         mAuth.signInWithCredential(credentials).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -283,6 +283,7 @@ public class GoogleSignInPlugin extends CordovaPlugin {
                                 userInfo.put("email", user.getEmail());
                                 userInfo.put("photo_url", user.getPhotoUrl());
                                 userInfo.put("id_token", getTokenResult.getToken());
+                                userInfo.put("server_auth_code", serverAuthCode);
                                 userInfo.put("access_token", accessToken);
                                 mCallbackContext.success(getSuccessMessageForOneTapLogin(userInfo));
                             } catch (Exception ex) {
@@ -314,6 +315,7 @@ public class GoogleSignInPlugin extends CordovaPlugin {
         }
         // gso.requestScopes(new Scope("https://www.googleapis.com/auth/calendar"), new Scope("https://www.googleapis.com/auth/drive"), new Scope("https://www.googleapis.com/auth/drive.appdata"), new Scope("https://www.googleapis.com/auth/drive.readonly"), new Scope("https://www.googleapis.com/auth/drive.file"), new Scope("https://www.googleapis.com/auth/drive.metadata"), new Scope("https://www.googleapis.com/auth/drive.metadata.readonly"));
         gso.requestIdToken(this.cordova.getActivity().getResources().getString(getAppResource("default_client_id", "string")));
+        gso.requestServerAuthCode(this.cordova.getActivity().getResources().getString(getAppResource("default_client_id", "string")), true);
         gso.requestEmail();
         return gso.build();
     }
