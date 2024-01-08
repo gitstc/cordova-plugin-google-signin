@@ -137,7 +137,12 @@
 }
 
 - (void) isSignedIn:(CDVInvokedUrlCommand*)command {
-    bool isSignedIn = [GIDSignIn.sharedInstance currentUser] != nil;
+    // bool isSignedIn = [GIDSignIn.sharedInstance currentUser] != nil;
+    // NSDictionary *details = @{@"status": @"success", @"message": (isSignedIn) ? @"true" : @"false"};
+    // CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[self toJSONString:details]];
+    // [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+    bool isSignedIn = [GIDSignIn.sharedInstance hasPreviousSignIn];
     NSDictionary *details = @{@"status": @"success", @"message": (isSignedIn) ? @"true" : @"false"};
     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[self toJSONString:details]];
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
