@@ -57,6 +57,7 @@
     GIDConfiguration *config = [[GIDConfiguration alloc] initWithClientID:clientId];
     
     GIDSignIn *signIn = GIDSignIn.sharedInstance;
+    [signIn setConfiguration:config];
 
     NSString* scopesString = command.arguments[0];
     NSArray* scopes = [scopesString componentsSeparatedByString:@" "];
