@@ -57,33 +57,37 @@
     GIDConfiguration *config = [[GIDConfiguration alloc] initWithClientID:clientId];
     
     GIDSignIn *signIn = GIDSignIn.sharedInstance;
+    [signIn setConfiguration:config];
 
     NSString* scopesString = command.arguments[0];
     NSArray* scopes = [scopesString componentsSeparatedByString:@" "];
     
-    [signIn signInWithConfiguration:config presentingViewController:self.viewController hint:@"" additionalScopes:scopes callback:^(GIDGoogleUser * _Nullable user, NSError * _Nullable error) {
+    [signIn signInWithPresentingViewController:self.viewController hint:@"" additionalScopes:scopes completion:^(GIDSignInResult * _Nullable signInResult, NSError * _Nullable error) {
         if (error) {
             NSDictionary *errorDetails = @{@"status": @"error", @"message": error.localizedDescription};
             CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[self toJSONString:errorDetails]];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self->_callbackId];
         } else {
-            NSString *email = user.profile.email;
-            NSString *userId = user.userID;
-            NSURL *imageUrl = [user.profile imageURLWithDimension:120]; // TODO pass in img size as param, and try to sync with Android
+            NSString *email = signInResult.user.profile.email;
+            NSString *userId = signInResult.user.userID;
+            NSURL *imageUrl = [signInResult.user.profile imageURLWithDimension:120]; // TODO pass in img size as param, and try to sync with Android
             NSDictionary *result = @{
                            @"email"            : email,
                            @"id"               : userId,
-                           @"id_token"         : user.authentication.idToken,
-                           @"access_token"     : user.authentication.accessToken,
-                           @"refresh_token"    : user.authentication.refreshToken,
-                           @"display_name"     : user.profile.name       ? : [NSNull null],
-                           @"given_name"       : user.profile.givenName  ? : [NSNull null],
-                           @"family_name"      : user.profile.familyName ? : [NSNull null],
+                           @"id_token"         : signInResult.user.idToken.tokenString,
+                           @"access_token"     : signInResult.user.accessToken.tokenString,
+                           @"refresh_token"    : signInResult.user.refreshToken.tokenString,
+                           @"display_name"     : signInResult.user.profile.name       ? : [NSNull null],
+                           @"given_name"       : signInResult.user.profile.givenName  ? : [NSNull null],
+                           @"family_name"      : signInResult.user.profile.familyName ? : [NSNull null],
                            @"photo_url"        : imageUrl ? imageUrl.absoluteString : [NSNull null],
                            };
 
 
             NSDictionary *response = @{@"message": result, @"status": @"success"};
+            
+            NSLog(@"RESPONSE==========================================================");
+            //NSLog(response);
             
             CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString: [self toJSONString:response]];
             [self.commandDelegate sendPluginResult:pluginResult callbackId:self->_callbackId];
@@ -123,7 +127,7 @@
 }
 
 - (void) disconnect:(CDVInvokedUrlCommand*)command {
-    [GIDSignIn.sharedInstance disconnectWithCallback:^(NSError * _Nullable error) {
+    [GIDSignIn.sharedInstance disconnectWithCompletion:^(NSError * _Nullable error) {
         if(error == nil) {
             NSDictionary *details = @{@"status": @"success", @"message": @"Disconnected"};
             CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[self toJSONString:details]];
