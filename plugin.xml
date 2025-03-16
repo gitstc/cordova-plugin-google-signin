@@ -36,6 +36,7 @@
         <source-file src="src/ios/GoogleSignInPlugin.m" />
 
         <preference name="REVERSED_CLIENT_ID" />
+        <preference name="CLIENT_ID" />
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
             <array>
               <dict>
@@ -50,13 +51,17 @@
               </dict>
             </array>
           </config-file>
+          <config-file target="*-Info.plist">
+            <key>"GIDClientID"</key>
+            <string>$CLIENT_ID</string>
+          </config-file>
 
           <podspec>
             <config>
               <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-              <pod name="GoogleSignIn" spec="~> 6.2.4" />
+              <pod name="GoogleSignIn" spec="~> 7.1.0" />
               <!-- <pod name="GoogleUtilities" spec="~> 7.11.0" /> -->
             </pods>
           </podspec>
